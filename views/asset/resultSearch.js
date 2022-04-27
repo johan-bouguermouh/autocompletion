@@ -9,7 +9,7 @@ window.addEventListener("DOMContentLoaded", (event)=>
     {
         let vowels = ['A','E','I','O','U','Y','H'];
         
-        let connectName = vowels.includes(data.nom[0]) ? "d'"+data.nom : data.nom;
+        let connectName = vowels.includes(data.nom[0]) ? "d'"+data.nom : "de"+data.nom;
 
         let nameScientist = data.decouverte_noms==='' ? '' : " part "+data.decouverte_noms;
 

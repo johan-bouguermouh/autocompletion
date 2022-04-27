@@ -11,8 +11,10 @@ window.addEventListener("DOMContentLoaded", (event)=>
      *  /!\ Aucune Classe ni ID n'est à définir cependant pour l'accessibilité il peut être défini sur le container adjacent /!\
      */
     let SearchBar = document.querySelector('form[role = search]')
-    let inputSearch = document.querySelector('form input[name = recherche]')
-    let containeResultSearch = document.querySelector('form[role = search]~div');
+    let inputSearch = document.querySelector('input[name = recherche]')
+    let containeResultSearch = document.querySelector('#searchResult');
+    let indexSelect =  -1;
+    let interuptSearch = false
     
     /**
      * Change la casse en capitale du premier caractère sur une chène donnée
@@ -39,7 +41,7 @@ window.addEventListener("DOMContentLoaded", (event)=>
         let icrementTab = 0;
         data.forEach(atome => {
             let li = document.createElement('li');
-            li.role="option"
+
 
             li.innerHTML = atome.nom
 
@@ -47,6 +49,7 @@ window.addEventListener("DOMContentLoaded", (event)=>
             {
                 ulResultSearch.role="listbox"
                 li.innerHTML = `<a href="element.php?id=${atome.id}">${li.innerHTML.replace(strUcFirst(inputSearch.value),'<span class="strBolder">'+strUcFirst(inputSearch.value)+'</span>')}</a>`
+                let aChild = li.firstChild
                 
             }
             else if(position === 'under')
@@ -62,6 +65,96 @@ window.addEventListener("DOMContentLoaded", (event)=>
             kinship.appendChild(ulResultSearch);
      }
 
+     /** Si la personne reprend la sourie on annule le comportement du clavier */
+     inputSearch.addEventListener('click', (event)=>{
+        indexSelect =  -1
+        containeResultSearch.classList.remove('hidden')
+        containeResultSearch.scrollTop = 0
+    });
+
+    /**
+     * Si la personne utilise les flèches du clavier nous navigon dans l'autocompletion déjà charger
+     */
+     inputSearch.addEventListener('keydown', (event)=>{
+        if(inputSearch.value.length >= 1)
+        {
+            
+            let liNode = containeResultSearch.querySelectorAll('li');
+            let indexwitness = indexSelect;
+
+            function followingPositionLiSelected()
+            {
+                let posLi = liNode[indexSelect].offsetTop
+                let sizeLi = liNode[indexSelect].clientHeight
+                let sizeBox =containeResultSearch.clientHeight
+
+                if(event.key === 'ArrowDown' && posLi+sizeLi >sizeBox)
+                {
+                    containeResultSearch.scrollTop = (posLi+sizeLi)-(sizeBox-5)
+                }
+
+                if(event.key === 'ArrowUp' && containeResultSearch.scrollTop > posLi)
+                {
+                    containeResultSearch.scrollTop = posLi
+                }
+            }
+            
+            if(event.key === 'ArrowDown')
+            {
+                if(indexwitness > -1)
+                {
+                    liNode[indexwitness].classList.remove('liOnFocus'); 
+                }
+                ++indexSelect;
+                if(indexSelect >= liNode.length)
+                {
+                    indexSelect = 0;
+                }
+                liNode[indexSelect].classList.add('liOnFocus');
+
+                followingPositionLiSelected()
+
+                interuptSearch = true
+                
+            }
+            else if(event.key === 'ArrowUp')
+            {
+                if(indexwitness > -1)
+                {
+                    liNode[indexwitness].classList.remove('liOnFocus'); 
+                }
+                --indexSelect;
+                if(indexSelect >= 0)
+                {
+                liNode[indexSelect].classList.add('liOnFocus');
+
+                followingPositionLiSelected()
+
+                interuptSearch = true
+                }
+                else{
+                    indexSelect = -1
+                }
+            }
+            else if(event.key === 'Enter')
+            {
+                if(indexSelect > -1)
+                {
+                let newloc = liNode[indexSelect].firstChild.href
+                window.location = newloc
+                }
+                else(
+                    window.location.href = `/autocompletion/views/recherche.php?recherche=${inputSearch.value}`
+                )
+            }
+            else{
+                interuptSearch = false
+                indexSelect =  -1;
+            }     
+        }
+    })
+
+
     /**
      * Script de la barre de recherche
      * Donnée récupérer format JSON /valeur d'entrée Keypress caractère superieur à 1
@@ -69,43 +162,60 @@ window.addEventListener("DOMContentLoaded", (event)=>
      *  - 'under'= 'le champ de recherche s'applique à l'interieur du nom'
      *  - 'begin'= 'le champ de recherche s'applique au début du nom'
      */
-    inputSearch.addEventListener('keyup', (event) => {
-
-        //Nettoyage des recherche précédente
-        if(containeResultSearch.childNodes != null)
-        {
-            let allHoldLi = containeResultSearch.querySelectorAll('ul');
-
-            allHoldLi.forEach(oldLi => {
-                oldLi.remove()
-            }); 
-        }
-
-        if(inputSearch.value.length >= 1)
-        {
-            let value = JSON.stringify({"value":inputSearch.value})
-            
-            fetch('../controllers/searchBarre.php',
+        inputSearch.addEventListener('keyup', (event) => {
+            if(interuptSearch === false)
             {
-                header: {
-                    'Charset': 'UTF-8'
-                },
-                method: 'POST',
-                body: value
-            })
-            .then(function(response) {
-                response.json().then(function(response){
+                //Nettoyage des recherche précédente
+                if(containeResultSearch.childNodes != null)
+                {
+                    let allHoldLi = containeResultSearch.querySelectorAll('ul');
+
+                    allHoldLi.forEach(oldLi => {
+                        oldLi.remove()
+                    }); 
+                }
+
+                if(inputSearch.value.length >= 1)
+                {
+                    let value = JSON.stringify({"value":inputSearch.value})
                     
-                    creatNewListName(response.begin, 'begin', containeResultSearch)
-                    creatNewListName(response.under, 'under', containeResultSearch)
-                })
-            });
+                    fetch('../controllers/searchBarre.php',
+                    {
+                        header: {
+                            'Charset': 'UTF-8'
+                        },
+                        method: 'POST',
+                        body: value
+                    })
+                    .then(function(response) {
+                        response.json().then(function(response){
+                            
+                            creatNewListName(response.begin, 'begin', containeResultSearch)
+                            creatNewListName(response.under, 'under', containeResultSearch)
+                        })
+                    });
+
+                }
+            }
+        });
+
+    
+    inputSearch.addEventListener('focusout', (event)=>{
+        setTimeout(() => {
+            if(inputSearch.value.length > 0)
+        {
+        containeResultSearch.classList.add('hidden')
+        }
+        }, 100);
+        
+    })
+
+    containeResultSearch.addEventListener("mouseover", function( event ) {
+        let changefocus = containeResultSearch.querySelector('.liOnFocus')
+        if(changefocus != null)
+        {
+            changefocus.classList.remove('liOnFocus')
         }
     });
-
-    // inputSearch.addEventListener('focusout', (event)=>{
-    //     containeResultSearch.removeChild(containeResultSearch.querySelector('ul'))
-    //     containeResultSearch.removeChild(containeResultSearch.querySelector('ul'))
-    // })
 
 });

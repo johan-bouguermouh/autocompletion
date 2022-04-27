@@ -10,11 +10,11 @@
     <title>Document</title>
 </head>
 <body>
-    <header>     
-        <form action="recherche.php" role="search" method="get">
-            <input type="search" role="combobox" name="recherche" placeholder="rechercher" autocomplete='off' aria-autocomplete="list" aria-haspopup="listbox" aria-controls="searchResult" aria-expanded="false">
-        </form>
+    <header>
+        <div>   
+        <input type="search" role="combobox" name="recherche" placeholder="rechercher" autocomplete='off' aria-autocomplete="list" aria-haspopup="listbox" aria-controls="searchResult" aria-expanded="false">
         <div id="searchResult"></div>
+        </div>
     </header>
     
 </body>
