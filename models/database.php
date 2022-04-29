@@ -46,5 +46,13 @@
             $stmt->execute($like);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
          }
+
+         public function selectElementById($id){
+
+            $value = ['id'=> $id];
+            $stmt = $this->dbh->prepare('SELECT * FROM atome WHERE `id` = :id');
+            $stmt->execute($value);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+         }
      }
 ?>

@@ -6,15 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="./asset/style.css">
+    <script src="./asset/printElement"></script>
     <script src="./asset/autocomplete.js"></script>
     <title>Document</title>
 </head>
 <body>
-<header>     
-        <form action="recherche.php" role="search" method="get">
-            <input type="search" role="combobox" name="recherche" placeholder="rechercher" autocomplete='off' aria-autocomplete="list" aria-haspopup="listbox" aria-controls="searchResult" aria-expanded="false">
-        </form>
-        <div id="searchResult"></div>
+    <header>
+        <a href="home.php"><img src="asset\images\logo_autocomplettion_w.svg" alt=""></a>
+        <div>
+            <img src="asset/images/icon_loupe.svg" alt="icon de recherche" aria="hidden">
+            <input type="search" role="combobox" name="recherche" placeholder="Rechercher" autocomplete='off' aria-autocomplete="list" aria-haspopup="listbox" aria-controls="searchResult" aria-expanded="false">
+        <section id="searchResult"></section>
+        </div>
     </header>
     <main></main>
 </body>

@@ -2,7 +2,7 @@ window.addEventListener("DOMContentLoaded", (event)=>
 {
     let main = document.querySelector('body > main');
     let params = new URLSearchParams(document.location.search);
-    let getParam = params.get("recherche");
+    let getParam = params.get("id");
 
     function generateInfoAtom(data)
     {
@@ -45,12 +45,10 @@ window.addEventListener("DOMContentLoaded", (event)=>
 
     function generateResult(response)
     {
-        let printSearch = document.getElementById('mainResult')
-        let PrintAllResult = document.createElement('section');
-        response.forEach(element => {
+        element = response[0]
 
             //Creation du conteneur
-            let articleResult = document.createElement('article');
+            let articleResult = document.createElement('section');
             articleResult.className = 'vignette';
 
             //creation de la vignette
@@ -74,7 +72,7 @@ window.addEventListener("DOMContentLoaded", (event)=>
             // ajout des information
             let Information = document.createElement('div')
             let nameAtome = document.createElement('h3');
-            nameAtome.innerHTML = `<a href="element.php?id=${element.id}">${element.nom}</a>`;
+            nameAtome.innerHTML = element.nom;
             let infoAtome = document.createElement('p');
             infoAtome.innerHTML = generateInfoAtom(element)
             
@@ -84,13 +82,36 @@ window.addEventListener("DOMContentLoaded", (event)=>
             //insertion dans le conteneur parent
             articleResult.append(Vignette);
             articleResult.append(Information);
-            PrintAllResult.append(articleResult);
-        });
-        printSearch.append(PrintAllResult);       
+        
+        return articleResult
+        
     }
 
+    function générateUl(response)
+    {   
+        let ulDesribe = document.createElement('ul')
+        let tabValue = Object.values(response)
+        let tabIndex = Object.keys(response);
+        
+        for (let index = 3; index < tabIndex.length; index++) {
+            
+            if(tabIndex[index].includes('decouverte') === false)
+            {
+                if(tabIndex[index].includes('_'))tabIndex[index] = tabIndex[index].replace('_', ' ');
+                if(tabIndex[index].includes('_'))tabIndex[index] = tabIndex[index].replace('_', ' ');
+                if(tabValue[index] === null) tabValue[index] = 'Inconnu(e)';
+    
+                liCase = document.createElement('li')
+                liCase.innerHTML = `<span>${tabIndex[index]}</span> : ${tabValue[index]}`
+                ulDesribe.append(liCase);
+            }
+            
+        }
+
+        return ulDesribe;
+    }
     let value = JSON.stringify({"value":getParam})
-    fetch('../controllers/searchpage.php',
+    fetch('../controllers/elementpage.php',
             {
                 header: {
                     'Charset': 'UTF-8'
@@ -101,32 +122,25 @@ window.addEventListener("DOMContentLoaded", (event)=>
             .then(function(response) {
                 response.json().then(function(response){
                     
-                    
-                    if(response.begin.length != 0 || response.under.length != 0)
+                    if(response[0] !== '404')
                     {
-                        let numberResults = response.begin.length + response.under.length;
-
                         let printSearch = document.createElement('artcile')
-                        printSearch.id = "mainResult"
-                        let title = document.createElement('h1');
-                        title.innerHTML = `Résultat de recherche pour : <b>${getParam}</b>`
-                        let nbResult = document.createElement('p')
-                        nbResult.innerHTML = `Nombre de resultat <i>${numberResults}</i>`
-                        printSearch.append(title);
-                        printSearch.append(nbResult);
-                        main.append(printSearch)
+                        printSearch.className = "mainElement"
+                        let introduction = generateResult(response)
+                        printSearch.append(introduction)
+
+
+                        let infoElement = document.createElement('section')
+                        let tabInfo = générateUl(response[0])
+                        let titleDescribe = document.createElement('h3');
+                        titleDescribe.innerHTML = 'Informations'
+
+
+                        infoElement.append(titleDescribe)
+                        infoElement.append(tabInfo)
+                        printSearch.append(infoElement)
                         
-                        generateResult(response.begin)
-
-                        let moreResultButton = document.createElement('button');
-                        moreResultButton.innerHTML = '<i class="fa-solid fa-caret-down"></i> accèder à plus de résultat';
-                        moreResultButton.id = 'buttonMoreResult'
-                        main.append(moreResultButton)
-
-                        moreResultButton.addEventListener('click', (event) =>{
-                            generateResult(response.under)
-                            main.removeChild(moreResultButton)
-                    })
+                        main.append(printSearch)
                     }
                     else{
 
@@ -135,6 +149,7 @@ window.addEventListener("DOMContentLoaded", (event)=>
                         erreur.innerHTML = 'Oups ! Aucun élément correspond à votre recherche'
                         main.append(erreur)
                     }
+
                 })
             });
 });
