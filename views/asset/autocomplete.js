@@ -10,7 +10,6 @@ window.addEventListener("DOMContentLoaded", (event)=>
      * 
      *  /!\ Aucune Classe ni ID n'est à définir cependant pour l'accessibilité il peut être défini sur le container adjacent /!\
      */
-    let SearchBar = document.querySelector('form[role = search]')
     let inputSearch = document.querySelector('input[name = recherche]')
     let containeResultSearch = document.querySelector('#searchResult');
     let indexSelect =  -1;

@@ -16,7 +16,7 @@
         <div>
             <img src="asset/images/icon_loupe.svg" alt="icon de recherche" aria="hidden">
             <input type="search" role="combobox" name="recherche" placeholder="Rechercher" autocomplete='off' aria-autocomplete="list" aria-haspopup="listbox" aria-controls="searchResult" aria-expanded="false">
-        <div id="searchResult"></div>
+        <section id="searchResult"></section>
         </div>
     </header>
     <main></main>

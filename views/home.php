@@ -10,12 +10,16 @@
     <title>Document</title>
 </head>
 <body>
-    <header>
-        <div>   
-        <input type="search" role="combobox" name="recherche" placeholder="rechercher" autocomplete='off' aria-autocomplete="list" aria-haspopup="listbox" aria-controls="searchResult" aria-expanded="false">
-        <div id="searchResult"></div>
-        </div>
-    </header>
+    <main>
+        <section class="MainWrapper">
+            <img src="asset\images\logo_autocomplettion.svg" alt="">
+            <div>
+                <img src="asset/images/icon_loupe.svg" alt="icon de recherche" aria="hidden">
+                <input type="search" role="combobox" name="recherche" placeholder="Rechercher" autocomplete='off' aria-autocomplete="list" aria-haspopup="listbox" aria-controls="searchResult" aria-expanded="false">
+            <section id="searchResult"></section>
+            </div>
+        </section>
+    </main>
     
 </body>
 </html>
