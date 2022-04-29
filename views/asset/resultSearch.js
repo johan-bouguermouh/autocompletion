@@ -1,3 +1,4 @@
+"use strict";
 window.addEventListener("DOMContentLoaded", (event)=>
 {
     let main = document.querySelector('body > main');
